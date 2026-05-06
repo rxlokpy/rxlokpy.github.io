@@ -1,0 +1,381 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --purple-deep:   #0d0010;
+  --purple-dark:   #1a0030;
+  --purple-mid:    #3d0070;
+  --purple-bright: #8b2fc9;
+  --purple-light:  #c084fc;
+  --purple-glow:   #d8b4fe;
+  --accent:        #e879f9;
+  --text:          #f3e8ff;
+  --text-muted:    #a78bca;
+  --card-bg:       rgba(61, 0, 112, 0.25);
+  --card-border:   rgba(192, 132, 252, 0.2);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--purple-deep);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── noise overlay ── */
+.noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── aurora background ── */
+.aurora-container {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.aurora-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* ── layout ── */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+/* ── hero ── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+/* pfp */
+.pfp-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pfp-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--accent),
+    var(--purple-bright),
+    var(--purple-light),
+    var(--accent)
+  );
+  animation: spin 4s linear infinite;
+  z-index: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.pfp {
+  position: relative;
+  z-index: 1;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--purple-deep);
+  display: block;
+}
+
+/* hero text */
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.greeting {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+.name {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--purple-glow) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cursor {
+  animation: blink 1s step-end infinite;
+  -webkit-text-fill-color: var(--accent);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tag {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--purple-light);
+  font-size: 0.8rem;
+  font-family: 'Space Mono', monospace;
+  padding: 4px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── cards ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--purple-bright);
+  box-shadow: 0 0 32px rgba(139, 47, 201, 0.4);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--purple-light);
+  margin-bottom: 8px;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ── quote ── */
+.quote-section {
+  display: flex;
+  justify-content: center;
+}
+
+.quote {
+  max-width: 640px;
+  text-align: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+  border-left: 3px solid var(--purple-bright);
+  padding: 16px 24px;
+  background: var(--card-bg);
+  border-radius: 0 12px 12px 0;
+  backdrop-filter: blur(8px);
+  font-style: italic;
+}
+
+.quote-author {
+  display: block;
+  margin-top: 10px;
+  color: var(--purple-light);
+  font-style: normal;
+  font-size: 0.8rem;
+}
+
+/* ── footer ── */
+.footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: 'Space Mono', monospace;
+  padding-top: 8px;
+  border-top: 1px solid var(--card-border);
+}
+
+/* ── responsive ── */
+@media (max-width: 560px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .pfp {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* ── ASCII banner ── */
+.ascii-banner {
+  width: 100%;
+  /* negative margin to break out of the container's max-width */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  width: 100vw;
+}
+
+.ascii-banner-inner {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.ascii-banner-inner canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: pixelated;
+}
+
+.ascii-banner-inner pre {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  line-height: 1em;
+  text-align: left;
+  position: absolute;
+  inset: 0;
+  /* purple-to-accent gradient on the ASCII glyphs */
+  background-image: linear-gradient(135deg, #d8b4fe 0%, #e879f9 50%, #c084fc 100%);
+  background-attachment: fixed;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  z-index: 9;
+  mix-blend-mode: normal;
+}
+
+/* ── TargetCursor ── */
+body.cursor-active {
+  cursor: none;
+}
+
+#target-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10000;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.target-cursor-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.target-cursor-corner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 3px solid #fff;
+  will-change: transform;
+}
+
+.corner-tl {
+  transform: translate(-150%, -150%);
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-tr {
+  transform: translate(50%, -150%);
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-br {
+  transform: translate(50%, 50%);
+  border-left: none;
+  border-top: none;
+}
+
+.corner-bl {
+  transform: translate(-150%, 50%);
+  border-right: none;
+  border-top: none;
+}
